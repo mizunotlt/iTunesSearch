@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_album"
+        android:icon="@drawable/album_icon"
+        android:checked="true"
+        android:title="@string/albumsTitle"/>
+
+    <item
+        android:id="@+id/navigation_songs"
+        android:icon="@drawable/music_icon"
+        android:checked="false"
+        android:title="@string/songsTitle"/>
+
+</menu>

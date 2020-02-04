@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">iTunesSearch</string>
+    <string name="albumsNameType">Please Input albums name</string>
+    <string name="collectionName">CollectionName</string>
+    <string name="todo">TODO</string>
+    <string name="contentDescriptionButton">find</string>
+    <string name="contentDescriptionImage">posterAlbums</string>
+    <string name="artistName">artistName</string>
+    <string name="genres">genres</string>
+    <string name="countryName">countryName</string>
+    <string name="albumsPrice">price</string>
+    <string name="dateRelease">dateRelease</string>
+    <string name="albumsTitle">Albums</string>
+    <string name="songsTitle">Songs</string>
+    <string name="itemTitle">Title</string>
+    <string name="itemActors">Actors</string>
+</resources>

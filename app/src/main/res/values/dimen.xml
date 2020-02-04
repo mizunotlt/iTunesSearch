@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="editTextAlbumsViewWidth">200dp</dimen>
+    <dimen name="albumsControlFrameHeight">100dp</dimen>
+    <dimen name="nameImageButtonSize">50dp</dimen>
+    <dimen name="controlFrameHeight">500dp</dimen>
+    <dimen name="listAlbumsWidth">360dp</dimen>
+    <dimen name="listAlbumsHeight">490dp</dimen>
+    <dimen name="listAlbumsMarginTop">10dp</dimen>
+    <dimen name="aboutAlbumsFrameHeight">430dp</dimen>
+    <dimen name="imageViewSize">150dp</dimen>
+    <dimen name="controlSongsFrameHeight">160dp</dimen>
+    <dimen name="listSongsWidth">360dp</dimen>
+    <dimen name="listSongsHeight">140dp</dimen>
+    <dimen name="listSongsMargin">15dp</dimen>
+</resources>
