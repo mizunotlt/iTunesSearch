@@ -15,8 +15,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 class MainActivity : AppCompatActivity() {
 
     private lateinit var bottomNavigation: BottomNavigationView
-    private  var albumsFragment: AlbumsViewFragment? = null
-    private  var songsFragment: SongsViewFragment? = null
     private val fragmentManager by lazy { supportFragmentManager }
     private val albumsTAG = "albumsFragment"
     private val songsTAG = "songsFragment"
@@ -24,8 +22,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        albumsFragment = fragmentManager.findFragmentByTag(albumsTAG) as? AlbumsViewFragment
-        songsFragment = fragmentManager.findFragmentByTag(songsTAG) as? SongsViewFragment
+        var albumsFragment = fragmentManager.findFragmentByTag(albumsTAG) as? AlbumsViewFragment
+        var songsFragment = fragmentManager.findFragmentByTag(songsTAG) as? SongsViewFragment
         if (albumsFragment == null) {
             albumsFragment = AlbumsViewFragment()
             createFragment(albumsFragment!!, albumsTAG)
