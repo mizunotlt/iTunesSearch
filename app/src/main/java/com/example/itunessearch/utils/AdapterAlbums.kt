@@ -36,6 +36,13 @@ class AdapterAlbums(private var album: List<AlbumsData>): RecyclerView.Adapter<A
         return ViewHolder(itemView)
     }
 
+    fun pagingAdd(albumsData: List<AlbumsData>){
+        val oldSize = this.album.size
+        this.album = albumsData
+        val sizeNew = this.album.size
+        notifyItemRangeChanged(oldSize, sizeNew)
+    }
+
     fun update(albumsData: List<AlbumsData>){
         album = albumsData
         notifyDataSetChanged()

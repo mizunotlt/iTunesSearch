@@ -7,6 +7,7 @@ import com.example.itunessearch.data.AlbumsData
 import com.example.itunessearch.repository.AlbumsRepository
 import com.example.itunessearch.utils.Constants
 import kotlinx.coroutines.*
+import java.sql.Struct
 import kotlin.coroutines.CoroutineContext
 
 class AlbumsModels: ViewModel() {
@@ -40,25 +41,30 @@ class AlbumsModels: ViewModel() {
         offset = 0
         responseStatus.apply { value = false }
         scope.launch {
-            while (true){
-                val responseAlbums = repository.getAlbumsListByTerm(term, offset)
-                if (responseAlbums != null && responseAlbums.size == Constants.LIMIT){
-                    albums.addAll(responseAlbums)
-                    listAlbums.addAll(albums.sortedBy { it.collectionName })
-                    offset +=Constants.LIMIT
-
-                }
-                else{
-                    if (responseAlbums != null && responseAlbums.size < Constants.LIMIT){
-                        albums.addAll(responseAlbums)
-                        listAlbums.addAll(albums.sortedBy { it.collectionName })
-                        responseStatus.postValue(true)
-                        albumsLiveData.postValue(listAlbums)
-                        break
-                    }
-                }
+            val responseAlbums = repository.getAlbumsListByTerm(term, offset)
+            if (responseAlbums != null){
+                albums.addAll(responseAlbums)
+                offset += Constants.LIMIT
+                listAlbums.addAll(albums.sortedBy { it.collectionName })
+                responseStatus.postValue(true)
+                albumsLiveData.postValue(listAlbums)
             }
+        }
+    }
 
+    fun getAlbumsByTermOffset(term: String){
+        scope.launch {
+            val responseAlbums = repository.getAlbumsListByTerm(term, offset)
+            if (responseAlbums != null && responseAlbums.size != 0){
+                albums.addAll(responseAlbums)
+                if(responseAlbums.size == Constants.LIMIT){
+                    offset += Constants.LIMIT
+                }
+
+                listAlbums.addAll(albums.sortedBy { it.collectionName })
+                responseStatus.postValue(true)
+                albumsLiveData.postValue(listAlbums)
+            }
         }
     }
 

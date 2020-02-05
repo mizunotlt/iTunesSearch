@@ -15,12 +15,14 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.itunessearch.R
 import com.example.itunessearch.data.AlbumsData
 import com.example.itunessearch.models.AlbumsModels
 import com.example.itunessearch.utils.AdapterAlbums
 import com.example.itunessearch.utils.OnItemClickListener
+import com.example.itunessearch.utils.ScrollListener
 import java.lang.NumberFormatException
 
 
@@ -35,6 +37,9 @@ class AlbumsViewFragment : Fragment() {
     private lateinit var progressBar: ProgressBar
     private  var songsFragment: SongsViewFragment? = null
     private val songsTAG = "songsFragment"
+    var isLastPage: Boolean = false
+    var isLoading: Boolean = false
+
     companion object {
         fun newInstance() = AlbumsViewFragment()
     }
@@ -83,6 +88,21 @@ class AlbumsViewFragment : Fragment() {
 
         })
 
+        listAlbums.addOnScrollListener(object : ScrollListener(listAlbums.layoutManager as LinearLayoutManager) {
+            override fun isLastPage(): Boolean {
+                return isLastPage
+            }
+
+            override fun isLoading(): Boolean {
+                return isLoading
+            }
+
+            override fun getNewItems() {
+                isLoading = true
+                getNewAlbums()
+            }
+        })
+
         return viewAlbums
     }
 
@@ -94,7 +114,15 @@ class AlbumsViewFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         albumsViewModel.albumsLiveData.observe(viewLifecycleOwner, Observer<List<AlbumsData>> {
-            adapterAlbums.update(albumsViewModel.albumsLiveData.value!!)
+
+            if(isLoading){
+                adapterAlbums.pagingAdd(albumsViewModel.albumsLiveData.value!!)
+                isLoading = false
+            }
+            else{
+                adapterAlbums.update(albumsViewModel.albumsLiveData.value!!)
+            }
+
             if (albumsViewModel.responseStatus.value!!){
                 progressBar.isVisible = false
             }
@@ -121,11 +149,16 @@ class AlbumsViewFragment : Fragment() {
             }
         })
     }
+
     private fun createToast (text: String){
         val toast = Toast.makeText(activity, text, Toast.LENGTH_SHORT)
         toast.setGravity(Gravity.BOTTOM, 0, 50)
         toast.view.setBackgroundColor(Color.GRAY)
         toast.show()
+    }
+
+    fun getNewAlbums() {
+        albumsViewModel.getAlbumsByTermOffset(editTextFind.text.toString())
     }
 
 }
