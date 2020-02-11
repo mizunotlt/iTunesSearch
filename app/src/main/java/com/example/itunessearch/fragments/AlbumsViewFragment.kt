@@ -1,7 +1,6 @@
 package com.example.itunessearch.fragments
 
 import android.graphics.Color
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -20,15 +19,24 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.itunessearch.R
 import com.example.itunessearch.data.AlbumsData
 import com.example.itunessearch.models.AlbumsModels
-import com.example.itunessearch.utils.AdapterAlbums
+import com.example.itunessearch.adapters.AdapterAlbums
+import com.example.itunessearch.di.annotation.ApplicationScope
+import com.example.itunessearch.di.annotation.AlbumsViewModelScope
+import com.example.itunessearch.di.module.RepositoryModule
 import com.example.itunessearch.utils.OnItemClickListener
 import com.example.itunessearch.utils.ScrollListener
+import toothpick.Scope
+import toothpick.ktp.KTP
+import toothpick.ktp.delegate.inject
+import toothpick.smoothie.lifecycle.closeOnDestroy
+import toothpick.smoothie.viewmodel.closeOnViewModelCleared
+import toothpick.smoothie.viewmodel.installViewModelBinding
 import java.lang.NumberFormatException
 
 
 class AlbumsViewFragment : Fragment() {
 
-    private val albumsViewModel by lazy { ViewModelProviders.of(this).get(AlbumsModels::class.java) }
+    val albumsViewModel: AlbumsModels by inject()
     private lateinit var listAlbums: RecyclerView
     private lateinit var adapterAlbums: AdapterAlbums
     private lateinit var editTextFind: EditText
@@ -44,9 +52,28 @@ class AlbumsViewFragment : Fragment() {
         fun newInstance() = AlbumsViewFragment()
     }
 
+
+    private fun injectDependencies() {
+
+        KTP.openScopes(ApplicationScope::class.java)
+            .openSubScope(AlbumsViewModelScope::class.java) { scope: Scope ->
+                scope.installViewModelBinding<AlbumsModels>(this)
+                    .closeOnViewModelCleared(this)
+                    .installModules(
+                        RepositoryModule()
+                    )
+            }
+            .closeOnDestroy(this)
+            .inject(this)
+
+    }
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
+        injectDependencies()
     }
 
     override fun onCreateView(
@@ -63,7 +90,6 @@ class AlbumsViewFragment : Fragment() {
         progressBar.isVisible = false
         buttonFind.setOnClickListener {
             try{
-
                 albumsViewModel.getAlbumsByTerm(editTextFind.text.toString())
                 progressBar.isVisible = true
             }

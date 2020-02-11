@@ -15,7 +15,14 @@ import com.bumptech.glide.Glide
 import com.example.itunessearch.R
 import com.example.itunessearch.data.SongsData
 import com.example.itunessearch.models.SongsModels
-import com.example.itunessearch.utils.AdapterSongs
+import com.example.itunessearch.adapters.AdapterSongs
+import com.example.itunessearch.di.annotation.ApplicationScope
+import com.example.itunessearch.di.annotation.SongsViewModelScope
+import toothpick.Scope
+import toothpick.ktp.KTP
+import toothpick.smoothie.lifecycle.closeOnDestroy
+import toothpick.smoothie.viewmodel.closeOnViewModelCleared
+import toothpick.smoothie.viewmodel.installViewModelBinding
 import java.lang.IndexOutOfBoundsException
 import java.lang.StringBuilder
 
@@ -23,6 +30,7 @@ import java.lang.StringBuilder
 class SongsViewFragment : Fragment() {
 
     private val songsModel by lazy { ViewModelProviders.of(this).get(SongsModels::class.java)}
+    private lateinit var listAlbums: RecyclerView
     private lateinit var listSongs: RecyclerView
     private lateinit var adapterSongs: AdapterSongs
     private lateinit var textViewCollectionName: TextView
@@ -39,11 +47,17 @@ class SongsViewFragment : Fragment() {
         fun newInstance() = SongsViewFragment()
     }
 
+    override fun onStart() {
+        super.onStart()
+        injectDependencies()
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
+
         val bundleId = arguments
         songsModel.getSongs(bundleId!!.getInt("id"))
+
     }
 
     override fun onCreateView(
@@ -67,6 +81,16 @@ class SongsViewFragment : Fragment() {
         return songsView
     }
 
+    private fun injectDependencies() {
+
+        KTP.openScopes(ApplicationScope::class.java)
+            .openSubScope(SongsViewModelScope::class.java) { scope: Scope ->
+                scope.installViewModelBinding<SongsModels>(this)
+                    .closeOnViewModelCleared(this)
+            }
+            .closeOnDestroy(this)
+            .inject(this)
+    }
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 

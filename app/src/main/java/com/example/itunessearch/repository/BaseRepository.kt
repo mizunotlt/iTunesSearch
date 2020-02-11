@@ -3,7 +3,10 @@ package com.example.itunessearch.repository
 import android.util.Log
 import retrofit2.Response
 import java.io.IOException
+import javax.inject.Singleton
 
+
+@Singleton
 open class BaseRepository {
     suspend fun <T : Any> safeApiCall(call: suspend () -> Response<T>, errorMessage: String): T? {
 

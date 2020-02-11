@@ -1,4 +1,4 @@
-package com.example.itunessearch.utils
+package com.example.itunessearch.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +10,7 @@ import com.bumptech.glide.Glide
 import com.example.itunessearch.R
 import com.example.itunessearch.data.AlbumsData
 
-class AdapterAlbums(private var album: List<AlbumsData>): RecyclerView.Adapter<AdapterAlbums.ViewHolder>(){
+class AdapterAlbums(private var album: List<AlbumsData>): IAdapterAlbums(){
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bindItems(album[position].collectionName, album[position].artistName, album[position].artworkUrl60)

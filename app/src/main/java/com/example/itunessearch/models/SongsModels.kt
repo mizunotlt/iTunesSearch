@@ -2,11 +2,17 @@ package com.example.itunessearch.models
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.itunessearch.api.ITunesApiFactory
 import com.example.itunessearch.data.SongsData
+import com.example.itunessearch.di.module.RepositoryModule
+import com.example.itunessearch.di.annotation.SongsRepositoryScope
+import com.example.itunessearch.di.annotation.SongsViewModelScope
 import com.example.itunessearch.repository.SongsRepository
 import kotlinx.coroutines.*
+import toothpick.Scope
+import toothpick.ktp.KTP
+import toothpick.ktp.delegate.inject
 import kotlin.coroutines.CoroutineContext
+
 
 class SongsModels: ViewModel() {
 
@@ -17,7 +23,18 @@ class SongsModels: ViewModel() {
 
     private val scope = CoroutineScope(coroutineContext)
 
-    private val repository : SongsRepository = SongsRepository(ITunesApiFactory.songsApi)
+    private val  repository: SongsRepository by inject()
+
+    init {
+        KTP.openScopes(SongsViewModelScope::class.java)
+            .openSubScope(SongsRepositoryScope::class.java){
+                    scope: Scope ->
+                    scope.installModules(
+                        RepositoryModule()
+                    )
+            }
+            .inject(this)
+    }
 
     val songsLiveData = MutableLiveData<ArrayList<SongsData>>().apply { value = arrayListOf() }
     val songsDataForAdapter = MutableLiveData<ArrayList<SongsData>>().apply { value = arrayListOf() }

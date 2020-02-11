@@ -1,4 +1,4 @@
-package com.example.itunessearch.utils
+package com.example.itunessearch.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +10,7 @@ import com.example.itunessearch.data.SongsData
 import java.lang.StringBuilder
 
 
-class AdapterSongs(private var songs: ArrayList<SongsData>): RecyclerView.Adapter<AdapterSongs.ViewHolder>(){
+class AdapterSongs(private var songs: ArrayList<SongsData>): IAdapterSongs(){
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bindItems(songs[position].trackName, songs[position].trackNumber)

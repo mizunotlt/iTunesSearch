@@ -10,8 +10,9 @@
     <FrameLayout
         android:id="@+id/controlFrameLayout"
         android:layout_width="match_parent"
-        android:layout_height="534dp"
-        app:layout_constraintBottom_toTopOf="@+id/navigationFrameLayout"
+        android:layout_height="540dp"
+        android:layout_marginBottom="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/navigationMenu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -19,31 +20,18 @@
 
     </FrameLayout>
 
-    <FrameLayout
-        android:id="@+id/navigationFrameLayout"
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/navigationMenu"
         android:layout_width="match_parent"
-        android:layout_height="55dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:itemIconTint="@xml/bottom_navigation_item_background_color"
+        app:itemTextColor="@xml/bottom_navigation_item_background_color"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.49"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:menu="@menu/bottom_navigation_item" />
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/navigationMenu"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_marginStart="0dp"
-            android:layout_marginEnd="0dp"
-            app:itemIconTint="@xml/bottom_navigation_item_background_color"
-            app:itemTextColor="@xml/bottom_navigation_item_background_color"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:menu="@menu/bottom_navigation_item"
-            />
-
-
-    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

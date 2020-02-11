@@ -7,9 +7,17 @@ import android.view.Gravity
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.itunessearch.R
+import com.example.itunessearch.di.*
 import com.example.itunessearch.fragments.AlbumsViewFragment
 import com.example.itunessearch.fragments.SongsViewFragment
+import com.example.itunessearch.models.AlbumsModels
+import com.example.itunessearch.models.SongsModels
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import toothpick.Scope
+import toothpick.ktp.KTP
+import toothpick.smoothie.lifecycle.closeOnDestroy
+import toothpick.smoothie.viewmodel.closeOnViewModelCleared
+import toothpick.smoothie.viewmodel.installViewModelBinding
 
 
 class MainActivity : AppCompatActivity() {
@@ -26,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         var songsFragment = fragmentManager.findFragmentByTag(songsTAG) as? SongsViewFragment
         if (albumsFragment == null) {
             albumsFragment = AlbumsViewFragment()
-            createFragment(albumsFragment!!, albumsTAG)
+            createFragment(albumsFragment, albumsTAG)
         }
         bottomNavigation = findViewById(R.id.navigationMenu)
         bottomNavigation.setOnNavigationItemSelectedListener {
@@ -69,7 +77,6 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-
     /*
         Function for createFragmentFirst if it is first call!
      */
@@ -88,7 +95,7 @@ class MainActivity : AppCompatActivity() {
     private fun replaceFragment(fragment: Fragment, tag: String){
 
         val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.controlFrameLayout, fragment!!,  tag)
+        fragmentTransaction.replace(R.id.controlFrameLayout, fragment,  tag)
         fragmentTransaction.addToBackStack(tag)
         fragmentTransaction.commit()
 
