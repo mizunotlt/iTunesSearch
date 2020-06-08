@@ -2,21 +2,16 @@ package com.example.itunessearch.repository
 
 import com.example.itunessearch.api.AlbumsApi
 import com.example.itunessearch.data.AlbumsData
-import com.example.itunessearch.di.annotation.ApplicationScope
 import com.example.itunessearch.utils.Constants
-import toothpick.InjectConstructor
-import javax.inject.Singleton
 
-@Singleton
-@InjectConstructor
-@ApplicationScope
+
 open class AlbumsRepository (private val apiAl: AlbumsApi): BaseRepository() {
 
-    /*
-        Function for getting album from api iTunes
-        Search request
-        Function is suspending
-     */
+       /*
+           Function for getting album from api iTunes
+           Search request
+           Function is suspending
+        */
 
     suspend fun getAlbumsListByTerm(term: String, offset: Int): ArrayList<AlbumsData>?{
         val albumResponse = safeApiCall(

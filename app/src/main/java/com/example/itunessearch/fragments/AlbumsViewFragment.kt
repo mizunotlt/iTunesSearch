@@ -14,37 +14,30 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.itunessearch.ITunesSearchApplication
 import com.example.itunessearch.R
 import com.example.itunessearch.data.AlbumsData
 import com.example.itunessearch.models.AlbumsModels
 import com.example.itunessearch.adapters.AdapterAlbums
-import com.example.itunessearch.di.annotation.ApplicationScope
-import com.example.itunessearch.di.annotation.AlbumsViewModelScope
-import com.example.itunessearch.di.module.RepositoryModule
 import com.example.itunessearch.utils.OnItemClickListener
 import com.example.itunessearch.utils.ScrollListener
-import toothpick.Scope
-import toothpick.ktp.KTP
-import toothpick.ktp.delegate.inject
-import toothpick.smoothie.lifecycle.closeOnDestroy
-import toothpick.smoothie.viewmodel.closeOnViewModelCleared
-import toothpick.smoothie.viewmodel.installViewModelBinding
 import java.lang.NumberFormatException
+import javax.inject.Inject
 
 
 class AlbumsViewFragment : Fragment() {
 
-    val albumsViewModel: AlbumsModels by inject()
+    @Inject
+    lateinit var albumsViewModel: AlbumsModels
     private lateinit var listAlbums: RecyclerView
     private lateinit var adapterAlbums: AdapterAlbums
     private lateinit var editTextFind: EditText
     private lateinit var viewAlbums: View
     private lateinit var buttonFind: ImageButton
     private lateinit var progressBar: ProgressBar
-    private  var songsFragment: SongsViewFragment? = null
-    private val songsTAG = "songsFragment"
     var isLastPage: Boolean = false
     var isLoading: Boolean = false
 
@@ -52,28 +45,10 @@ class AlbumsViewFragment : Fragment() {
         fun newInstance() = AlbumsViewFragment()
     }
 
-
-    private fun injectDependencies() {
-
-        KTP.openScopes(ApplicationScope::class.java)
-            .openSubScope(AlbumsViewModelScope::class.java) { scope: Scope ->
-                scope.installViewModelBinding<AlbumsModels>(this)
-                    .closeOnViewModelCleared(this)
-                    .installModules(
-                        RepositoryModule()
-                    )
-            }
-            .closeOnDestroy(this)
-            .inject(this)
-
-    }
-
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
-        injectDependencies()
+        ITunesSearchApplication.appComponent.inject(albumsFragment = this@AlbumsViewFragment)
     }
 
     override fun onCreateView(
@@ -101,15 +76,12 @@ class AlbumsViewFragment : Fragment() {
         listAlbums.addOnItemClickListener(object : OnItemClickListener {
 
             override fun onItemClicked(position: Int, view: View) {
+                findNavController().currentDestination!!.id = albumsViewModel.albumsLiveData.value!![position].collectionId
                 albumsViewModel.setIdAlbums(albumsViewModel.albumsLiveData.value!![position].collectionId)
-                Log.i("Helps", albumsViewModel.albumsLiveData.value!![position].collectionId.toString())
-                songsFragment = SongsViewFragment()
+                val action = AlbumsViewFragmentDirections.actionAlbumsViewFragmentToSongsViewFragment(albumsViewModel.idAlbums.value!!)
                 val bundleId = Bundle()
                 bundleId.putInt("id",albumsViewModel.idAlbums.value!! )
-                songsFragment!!.arguments = bundleId
-                val fragmentTransaction = fragmentManager!!.beginTransaction()
-                fragmentTransaction.replace(R.id.controlFrameLayout, songsFragment!!,  songsTAG)
-                fragmentTransaction.commit()
+                findNavController().navigate(action)
             }
 
         })

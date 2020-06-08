@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/navigation_album"
+        android:id="@+id/albumsViewFragment"
         android:icon="@drawable/album_icon"
         app:showAsAction="always"
         android:checked="true"
         android:title="@string/albumsTitle"/>
 
     <item
-        android:id="@+id/navigation_songs"
+        android:id="@+id/songsViewFragment"
         android:icon="@drawable/music_icon"
         app:showAsAction="always"
         android:checked="false"

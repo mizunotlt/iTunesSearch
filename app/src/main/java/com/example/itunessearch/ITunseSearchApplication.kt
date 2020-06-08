@@ -1,34 +1,27 @@
 package com.example.itunessearch
 
 import android.app.Application
-import com.example.itunessearch.di.annotation.AlbumsRepositoryScope
-import com.example.itunessearch.di.annotation.ApplicationScope
-import com.example.itunessearch.di.module.RepositoryModule
-import toothpick.Scope
-import toothpick.ktp.KTP
-import toothpick.ktp.binding.bind
-import toothpick.ktp.binding.module
+import android.content.Context
+import com.example.itunessearch.di.components.AppComponent
+import com.example.itunessearch.di.components.DaggerAppComponent
 
 
 class ITunesSearchApplication: Application(){
 
-    private lateinit var scope: Scope
+    companion object {
+        lateinit var appContext: Context
+        lateinit var appComponent: AppComponent
+    }
 
     override fun onCreate() {
         super.onCreate()
-
-        scope = KTP.openScope(ApplicationScope::class.java)
-            .installModules(module {
-                bind<Application>().toInstance { this@ITunesSearchApplication }
-            })
-            .openSubScope(AlbumsRepositoryScope::class.java){
-                scope: Scope ->
-                scope.installModules(RepositoryModule())
-            }
+        appContext = applicationContext
+        appComponent = initDagger()
     }
 
-    override fun onTrimMemory(level: Int) {
-        super.onTrimMemory(level)
-        scope.release()
+    private fun initDagger(): AppComponent {
+        return DaggerAppComponent.builder()
+            .build()
     }
+
 }

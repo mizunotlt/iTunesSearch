@@ -5,14 +5,15 @@
     android:id="@+id/navigation_layout"
     app:startDestination="@id/albumsViewFragment">
 
-
     <fragment
         android:id="@+id/songsViewFragment"
         android:name="com.example.itunessearch.fragments.SongsViewFragment"
         android:label="songs_view_fragment"
-        tools:layout="@layout/songs_view_fragment" >
+        tools:layout="@layout/songs_view_fragment">
+        <argument
+            android:name="id"
+            app:argType="integer" />
     </fragment>
-
     <fragment
         android:id="@+id/albumsViewFragment"
         android:name="com.example.itunessearch.fragments.AlbumsViewFragment"
@@ -22,4 +23,5 @@
             android:id="@+id/action_albumsViewFragment_to_songsViewFragment"
             app:destination="@id/songsViewFragment" />
     </fragment>
+
 </navigation>

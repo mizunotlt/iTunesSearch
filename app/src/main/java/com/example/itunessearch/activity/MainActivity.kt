@@ -1,119 +1,67 @@
 package com.example.itunessearch.activity
 
-import android.graphics.Color
+
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Gravity
+import android.os.Handler
+import android.util.Log
 import android.widget.Toast
-import androidx.fragment.app.Fragment
+import androidx.core.os.postDelayed
+import androidx.navigation.NavArgument
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.navArgs
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.setupActionBarWithNavController
+import com.example.itunessearch.ITunesSearchApplication
 import com.example.itunessearch.R
-import com.example.itunessearch.di.*
-import com.example.itunessearch.fragments.AlbumsViewFragment
-import com.example.itunessearch.fragments.SongsViewFragment
-import com.example.itunessearch.models.AlbumsModels
-import com.example.itunessearch.models.SongsModels
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import toothpick.Scope
-import toothpick.ktp.KTP
-import toothpick.smoothie.lifecycle.closeOnDestroy
-import toothpick.smoothie.viewmodel.closeOnViewModelCleared
-import toothpick.smoothie.viewmodel.installViewModelBinding
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var bottomNavigation: BottomNavigationView
-    private val fragmentManager by lazy { supportFragmentManager }
-    private val albumsTAG = "albumsFragment"
-    private val songsTAG = "songsFragment"
-
+    private lateinit var navGraph: NavController
+    private lateinit var nav: BottomNavigationView
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ITunesSearchApplication.appComponent.inject(activity = this@MainActivity)
         setContentView(R.layout.activity_main)
-        var albumsFragment = fragmentManager.findFragmentByTag(albumsTAG) as? AlbumsViewFragment
-        var songsFragment = fragmentManager.findFragmentByTag(songsTAG) as? SongsViewFragment
-        if (albumsFragment == null) {
-            albumsFragment = AlbumsViewFragment()
-            createFragment(albumsFragment, albumsTAG)
-        }
-        bottomNavigation = findViewById(R.id.navigationMenu)
-        bottomNavigation.setOnNavigationItemSelectedListener {
-            when (it.itemId) {
-                R.id.navigation_album ->{
-                    if (albumsFragment == null) {
-                        albumsFragment = AlbumsViewFragment()
-                        createFragment(albumsFragment!!,albumsTAG)
-                    }
-                    else{
-                        replaceFragment(albumsFragment!!, albumsTAG)
-                    }
-                    it.isChecked = true
-
-                }
-                R.id.navigation_songs -> {
-                    val bundleId = Bundle()
-                    if (songsFragment == null) {
-                        if(albumsFragment!!.getIdAlbums() == 0){
-                            createToast("Albums not pick")
-                        }
-                        else{
-                            songsFragment = SongsViewFragment()
-                            bundleId.putInt("id", albumsFragment!!.getIdAlbums())
-                            songsFragment!!.arguments = bundleId
-                            createFragment(songsFragment!!, songsTAG)
-                            it.isChecked = true
-                        }
-                    }
-                    else{
-                        bundleId.putInt("id", albumsFragment!!.getIdAlbums())
-                        songsFragment!!.arguments = bundleId
-                        replaceFragment(songsFragment!!,songsTAG)
-                        it.isChecked = true
-                    }
-
-                }
-            }
-            false
-        }
-
-    }
-    /*
-        Function for createFragmentFirst if it is first call!
-     */
-    private fun createFragment(fragment: Fragment, tag: String){
-
-        val fm = supportFragmentManager
-        val fragmentTransaction = fm.beginTransaction()
-        fragmentTransaction.replace(R.id.controlFrameLayout, fragment,  tag)
-        fragmentTransaction.addToBackStack(tag)
-        fragmentTransaction.commit()
+        nav = findViewById(R.id.navigationMenu)
+        setupView()
     }
 
-    /*
-        Function for replace fragment another
-     */
-    private fun replaceFragment(fragment: Fragment, tag: String){
-
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.controlFrameLayout, fragment,  tag)
-        fragmentTransaction.addToBackStack(tag)
-        fragmentTransaction.commit()
-
+    private fun setupView(){
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentNavHost) as NavHostFragment
+        navGraph = navHostFragment.navController
+        NavigationUI.setupWithNavController(navigationMenu, navHostFragment.navController)
+        val appBarConfiguration = AppBarConfiguration(setOf(R.id.albumsViewFragment, R.id.songsViewFragment))
+        setupActionBarWithNavController(navHostFragment.navController, appBarConfiguration)
     }
 
-    /*
-        Function for message users that he did't pick album
-     */
-    private fun createToast (text: String){
-        val toast = Toast.makeText(applicationContext, text, Toast.LENGTH_SHORT)
-        toast.setGravity(Gravity.BOTTOM, 0, 50)
-        toast.view.setBackgroundColor(Color.GRAY)
-        toast.show()
-    }
+    private var backPressedOnce = false
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        bottomNavigation.selectedItemId = R.id.navigation_album
+        if (navGraph.graph.startDestination == navGraph.currentDestination?.id)
+        {
+            if (backPressedOnce)
+            {
+                super.onBackPressed()
+                return
+            }
+
+            backPressedOnce = true
+            Toast.makeText(this, "Press BACK again to exit", Toast.LENGTH_SHORT).show()
+
+            Handler().postDelayed(2000) {
+                backPressedOnce = false
+            }
+        }
+        else {
+            super.onBackPressed()
+        }
     }
 
 }

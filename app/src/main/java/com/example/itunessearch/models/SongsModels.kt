@@ -2,19 +2,19 @@ package com.example.itunessearch.models
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.itunessearch.ITunesSearchApplication
 import com.example.itunessearch.data.SongsData
-import com.example.itunessearch.di.module.RepositoryModule
-import com.example.itunessearch.di.annotation.SongsRepositoryScope
-import com.example.itunessearch.di.annotation.SongsViewModelScope
 import com.example.itunessearch.repository.SongsRepository
 import kotlinx.coroutines.*
-import toothpick.Scope
-import toothpick.ktp.KTP
-import toothpick.ktp.delegate.inject
+import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 
-class SongsModels: ViewModel() {
+class SongsModels @Inject constructor( private val  repository: SongsRepository): ViewModel() {
+
+    init {
+        ITunesSearchApplication.appComponent.inject(songsModels = this)
+    }
 
     private val parentJob = Job()
 
@@ -23,29 +23,18 @@ class SongsModels: ViewModel() {
 
     private val scope = CoroutineScope(coroutineContext)
 
-    private val  repository: SongsRepository by inject()
-
-    init {
-        KTP.openScopes(SongsViewModelScope::class.java)
-            .openSubScope(SongsRepositoryScope::class.java){
-                    scope: Scope ->
-                    scope.installModules(
-                        RepositoryModule()
-                    )
-            }
-            .inject(this)
-    }
-
     val songsLiveData = MutableLiveData<ArrayList<SongsData>>().apply { value = arrayListOf() }
     val songsDataForAdapter = MutableLiveData<ArrayList<SongsData>>().apply { value = arrayListOf() }
+    //val liveID = MutableLiveData<Int>().apply { value = null }
+    var id: Int? = null
 
     /*
         Function for getting tracks from api
         @Param - id where id = collectionId
      */
-    fun getSongs(id: Int){
+    fun getSongs(){
         scope.launch {
-            val songs = repository.getSongsList(id)
+            val songs = id?.let { repository.getSongsList(it) }
             songsLiveData.postValue(songs)
             songsDataForAdapter.postValue(songs?.filter { it.wrapperType != "collection" } as ArrayList<SongsData>?)
         }

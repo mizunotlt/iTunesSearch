@@ -7,6 +7,7 @@
     tools:context=".activity.MainActivity"
     android:background="@color/colorPrimary">
 
+
     <FrameLayout
         android:id="@+id/controlFrameLayout"
         android:layout_width="match_parent"
@@ -18,6 +19,13 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0">
 
+        <fragment
+            android:id="@+id/fragmentNavHost"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:defaultNavHost="true"
+            app:navGraph="@navigation/navigation_layout" />
     </FrameLayout>
 
 

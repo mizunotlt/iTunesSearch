@@ -1,6 +1,5 @@
 package com.example.itunessearch.fragments
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -12,24 +11,21 @@ import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.itunessearch.ITunesSearchApplication
 import com.example.itunessearch.R
 import com.example.itunessearch.data.SongsData
 import com.example.itunessearch.models.SongsModels
 import com.example.itunessearch.adapters.AdapterSongs
-import com.example.itunessearch.di.annotation.ApplicationScope
-import com.example.itunessearch.di.annotation.SongsViewModelScope
-import toothpick.Scope
-import toothpick.ktp.KTP
-import toothpick.smoothie.lifecycle.closeOnDestroy
-import toothpick.smoothie.viewmodel.closeOnViewModelCleared
-import toothpick.smoothie.viewmodel.installViewModelBinding
+import java.lang.IllegalArgumentException
 import java.lang.IndexOutOfBoundsException
 import java.lang.StringBuilder
+import javax.inject.Inject
 
 
 class SongsViewFragment : Fragment() {
 
-    private val songsModel by lazy { ViewModelProviders.of(this).get(SongsModels::class.java)}
+    @Inject
+    lateinit var songsModel: SongsModels
     private lateinit var listAlbums: RecyclerView
     private lateinit var listSongs: RecyclerView
     private lateinit var adapterSongs: AdapterSongs
@@ -47,17 +43,25 @@ class SongsViewFragment : Fragment() {
         fun newInstance() = SongsViewFragment()
     }
 
-    override fun onStart() {
-        super.onStart()
-        injectDependencies()
-    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        retainInstance = true
+        ITunesSearchApplication.appComponent.inject(songsViewFragment = this@SongsViewFragment)
 
-        val bundleId = arguments
-        songsModel.getSongs(bundleId!!.getInt("id"))
+        try {
+            val id = arguments?.let { SongsViewFragmentArgs.fromBundle(it).id }
+            retainInstance = true
+            if (songsModel.id == null){
+                songsModel.id = id
 
+            }
+            else if(songsModel.id != id){
+                songsModel.id = id
+            }
+            songsModel.getSongs()
+        }
+        catch (e: IllegalArgumentException){
+
+        }
     }
 
     override fun onCreateView(
@@ -76,21 +80,9 @@ class SongsViewFragment : Fragment() {
         trackCount = songsView.findViewById(R.id.textViewTrackNumber)
         adapterSongs = AdapterSongs(arrayListOf())
         listSongs.adapter = adapterSongs
-
-
         return songsView
     }
 
-    private fun injectDependencies() {
-
-        KTP.openScopes(ApplicationScope::class.java)
-            .openSubScope(SongsViewModelScope::class.java) { scope: Scope ->
-                scope.installViewModelBinding<SongsModels>(this)
-                    .closeOnViewModelCleared(this)
-            }
-            .closeOnDestroy(this)
-            .inject(this)
-    }
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
@@ -117,11 +109,4 @@ class SongsViewFragment : Fragment() {
             adapterSongs.update(songsModel.songsDataForAdapter.value!!)
         })
     }
-
-    override fun onResume() {
-        super.onResume()
-        val bundleId = arguments
-        songsModel.getSongs(bundleId!!.getInt("id"))
-    }
-
 }

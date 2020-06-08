@@ -2,18 +2,19 @@ package com.example.itunessearch.models
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.itunessearch.ITunesSearchApplication
 import com.example.itunessearch.data.AlbumsData
-import com.example.itunessearch.di.annotation.AlbumsViewModelScope
-import com.example.itunessearch.di.module.RepositoryModule
-import com.example.itunessearch.di.annotation.AlbumsRepositoryScope
 import com.example.itunessearch.repository.AlbumsRepository
 import com.example.itunessearch.utils.Constants
 import kotlinx.coroutines.*
-import toothpick.ktp.KTP
-import toothpick.ktp.delegate.inject
+import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
-class AlbumsModels : ViewModel() {
+class AlbumsModels @Inject constructor(private val  repository: AlbumsRepository) : ViewModel() {
+
+    init {
+        ITunesSearchApplication.appComponent.inject(albumsModels = this)
+    }
 
     private val parentJob = Job()
 
@@ -21,24 +22,12 @@ class AlbumsModels : ViewModel() {
         get() = parentJob + Dispatchers.Default
     private val scope = CoroutineScope(coroutinesContext)
 
-    private val  repository: AlbumsRepository by inject()
-
     val albumsLiveData = MutableLiveData<List<AlbumsData>>().apply { value = listOf() }
     val idAlbums = MutableLiveData<Int>().apply { value = 0 }
     private var offset = 0
     private val albums: ArrayList<AlbumsData> = arrayListOf()
     private val listAlbums: MutableList<AlbumsData> = mutableListOf()
     var responseStatus = MutableLiveData<Boolean>().apply { value = false }
-
-
-    init {
-        KTP.openScopes(AlbumsViewModelScope::class.java)
-            .openSubScope(AlbumsRepositoryScope::class.java)
-            .installModules(
-                RepositoryModule()
-            )
-            .inject(this)
-    }
 
     fun setIdAlbums(id: Int){
         idAlbums.apply { value = id }
