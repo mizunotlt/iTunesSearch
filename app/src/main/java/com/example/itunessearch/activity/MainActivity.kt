@@ -4,32 +4,26 @@ package com.example.itunessearch.activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.widget.Toast
 import androidx.core.os.postDelayed
-import androidx.navigation.NavArgument
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.navArgs
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.itunessearch.ITunesSearchApplication
 import com.example.itunessearch.R
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var navGraph: NavController
-    private lateinit var nav: BottomNavigationView
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ITunesSearchApplication.appComponent.inject(activity = this@MainActivity)
         setContentView(R.layout.activity_main)
-        nav = findViewById(R.id.navigationMenu)
         setupView()
     }
 

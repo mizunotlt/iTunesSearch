@@ -25,7 +25,6 @@ class SongsModels @Inject constructor( private val  repository: SongsRepository)
 
     val songsLiveData = MutableLiveData<ArrayList<SongsData>>().apply { value = arrayListOf() }
     val songsDataForAdapter = MutableLiveData<ArrayList<SongsData>>().apply { value = arrayListOf() }
-    //val liveID = MutableLiveData<Int>().apply { value = null }
     var id: Int? = null
 
     /*

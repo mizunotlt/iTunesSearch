@@ -8,9 +8,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -24,6 +21,7 @@ import com.example.itunessearch.models.AlbumsModels
 import com.example.itunessearch.adapters.AdapterAlbums
 import com.example.itunessearch.utils.OnItemClickListener
 import com.example.itunessearch.utils.ScrollListener
+import kotlinx.android.synthetic.main.albums_view_fragment.*
 import java.lang.NumberFormatException
 import javax.inject.Inject
 
@@ -32,12 +30,7 @@ class AlbumsViewFragment : Fragment() {
 
     @Inject
     lateinit var albumsViewModel: AlbumsModels
-    private lateinit var listAlbums: RecyclerView
     private lateinit var adapterAlbums: AdapterAlbums
-    private lateinit var editTextFind: EditText
-    private lateinit var viewAlbums: View
-    private lateinit var buttonFind: ImageButton
-    private lateinit var progressBar: ProgressBar
     var isLastPage: Boolean = false
     var isLoading: Boolean = false
 
@@ -55,15 +48,15 @@ class AlbumsViewFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewAlbums = inflater.inflate(R.layout.albums_view_fragment, container, false)
-        listAlbums =viewAlbums.findViewById(R.id.listAlbums)
+        return inflater.inflate(R.layout.albums_view_fragment, container, false)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         adapterAlbums = AdapterAlbums(listOf())
         listAlbums.adapter = adapterAlbums
-        editTextFind = viewAlbums.findViewById(R.id.editTextFind)
-        buttonFind = viewAlbums.findViewById(R.id.imageButtonFind)
-        progressBar= viewAlbums.findViewById(R.id.progressBar)
         progressBar.isVisible = false
-        buttonFind.setOnClickListener {
+        imageButtonFind.setOnClickListener {
             try{
                 albumsViewModel.getAlbumsByTerm(editTextFind.text.toString())
                 progressBar.isVisible = true
@@ -100,16 +93,6 @@ class AlbumsViewFragment : Fragment() {
                 getNewAlbums()
             }
         })
-
-        return viewAlbums
-    }
-
-    fun getIdAlbums(): Int{
-        return albumsViewModel.idAlbums.value!!
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
 
         albumsViewModel.albumsLiveData.observe(viewLifecycleOwner, Observer<List<AlbumsData>> {
 
